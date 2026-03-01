@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0D1117&height=300&section=header&text=TRACE-ABILITY%20AI&fontSize=80&fontColor=D4AF37&animation=fadeIn&desc=Black%20Box%20Software%20Intelligence%20Engine&descSize=24&descAlignY=65"/>
+  <img src="assets/Header.svg" />
 </p>
 
 <br>
