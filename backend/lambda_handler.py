@@ -6,9 +6,7 @@ import time
 from datetime import datetime, timezone
 from botocore.exceptions import ClientError
 
-# ==============================
 # MODEL ROUTING CONFIG
-# ==============================
 
 INTENT_MODEL = "apac.anthropic.claude-3-5-sonnet-20241022-v2:0"
 LIGHT_MODEL = "amazon.nova-lite-v1:0"
@@ -20,9 +18,8 @@ bedrock_client = boto3.client("bedrock-runtime", region_name=os.getenv("BEDROCK_
 dynamodb = boto3.resource("dynamodb", region_name="ap-south-1")
 table = dynamodb.Table(DYNAMODB_TABLE_NAME)
 
-# ==============================
+
 # PROMPT CACHEABLE SYSTEM PROMPTS
-# ==============================
 
 INTENT_SYSTEM_PROMPT = """
 You are TraceAbility Labs Cognitive Engineering AI.
@@ -53,12 +50,12 @@ Output in short storytelling format.
 """
 
 
-# ==============================
+
 # BEDROCK INVOCATION LAYER
-# ==============================
+
 
 def invoke_model(model_id: str, system_prompt: str, user_prompt: str, max_tokens: int):
-    # Prepare the request body
+    
     request_body = {
         "anthropic_version": "bedrock-2023-05-31",
 
@@ -68,7 +65,7 @@ def invoke_model(model_id: str, system_prompt: str, user_prompt: str, max_tokens
                 "text": system_prompt
             },
             {
-                # Bedrock expects cachePoint inside a block of type 'cache_control'
+               
                 "type": "cache_control",
                 "cachePoint": {"type": "default"}
             }
@@ -98,12 +95,10 @@ def invoke_model(model_id: str, system_prompt: str, user_prompt: str, max_tokens
 
         response_body = json.loads(response["body"].read())
 
-        # ==============================
-        # 2026 CREDIT MONITORING
-        # ==============================
+      
         usage = response_body.get("usage", {})
         
-        # Bedrock specific tracking for cache hits
+        
         read_cache = usage.get("cacheReadInputTokenCount", 0)
         write_cache = usage.get("cacheWriteInputTokenCount", 0)
         input_t = usage.get("inputTokens", 0)
@@ -119,18 +114,17 @@ def invoke_model(model_id: str, system_prompt: str, user_prompt: str, max_tokens
         print(f"AWS Bedrock Error: {e}")
         raise
 
-# ==============================
-# INTENT ANALYSIS (Claude)
-# ==============================
+
+# INTENT ANALYSIS 
 
 def invoke_intent_analysis(diff_content: str) -> dict:
-    # 1. First, handle the trimming logic
+   
     MAX_DIFF_CHARS = 6000
     if len(diff_content) > MAX_DIFF_CHARS:
-        # We trim and add a note so the AI knows it's looking at a partial file
+        
         diff_content = diff_content[:MAX_DIFF_CHARS] + "\n[... Diff truncated for cost optimization ...]"
 
-    # 2. THEN, build the prompt using the (potentially trimmed) diff_content
+    
     user_prompt = f"""
 Git Diff:
 {diff_content}
@@ -139,7 +133,7 @@ Provide deep engineering reasoning, not just summary.
 """
 
     try:
-        # 3. Call the model
+        
         output = invoke_model(
             INTENT_MODEL,
             INTENT_SYSTEM_PROMPT,
@@ -147,10 +141,10 @@ Provide deep engineering reasoning, not just summary.
             max_tokens=450
         )
 
-        # 4. Extract and parse JSON
+        
         match = re.search(r'\{.*\}', output, re.DOTALL)
         if not match:
-            # Helpful for debugging: log what the AI actually said
+             
             print(f"AI Response was not JSON: {output}")
             raise ValueError("No JSON found in AI response")
 
@@ -158,9 +152,9 @@ Provide deep engineering reasoning, not just summary.
 
     except Exception as error:
         raise RuntimeError(f"Bedrock intent analysis failed: {error}")
-# ==============================
-# ARCHITECTURE STORY (Nova Lite)
-# ==============================
+
+
+# ARCHITECTURE STORY 
 
 def generate_architecture_story(diff_content: str):
 
@@ -186,9 +180,7 @@ def generate_architecture_story(diff_content: str):
         return "Architecture insight generation failed."
 
 
-# ==============================
 # TRUST SCORE
-# ==============================
 
 def calculate_trust_score(intent_data: dict) -> float:
 
@@ -203,9 +195,7 @@ def calculate_trust_score(intent_data: dict) -> float:
     return round(trust / 10, 2)
 
 
-# ==============================
 # STORAGE
-# ==============================
 
 def store_intent(commit_id: str, intent_data: dict):
 
@@ -219,14 +209,13 @@ def store_intent(commit_id: str, intent_data: dict):
             "confidence_score": intent_data.get("confidence_score"),
             "spec_alignment_score": intent_data.get("spec_alignment_score"),
             "trust_score": intent_data.get("final_trust_score"),
-            "logged_at": datetime.now(timezone.utc).isoformat()
+            "logged_at": datetime.now(timezone.utc).isoformat(),
+            "expire_at": int(time.time()) + (30 * 24 * 3600)
         }
     )
 
 
-# ==============================
 # LAMBDA ENTRYPOINT
-# ==============================
 
 def lambda_handler(event, context):
 
@@ -243,9 +232,7 @@ def lambda_handler(event, context):
                 "body": json.dumps({"error": "Empty or invalid diff content"})
             }
 
-        # ==========================
         # INTENT ANALYSIS
-        # ==========================
 
         intent_result = invoke_intent_analysis(diff_content)
 
