@@ -6,8 +6,9 @@ import sys
 import json
 from datetime import datetime
 
-# ⭐ Replace this with your real Lambda URL
 LAMBDA_URL = "https://wqn6vtpx2yrpfqb3qligyyt4ru0vjicb.lambda-url.ap-south-1.on.aws/"
+
+MAX_DIFF_CHARS = 6000
 
 
 def get_staged_diff() -> str:
@@ -26,6 +27,22 @@ def get_staged_diff() -> str:
         sys.exit(1)
 
 
+def clean_diff(diff: str) -> str:
+    
+    cleaned_lines = []
+
+    for line in diff.split("\n"):
+        if line.startswith("index "):
+            continue
+        if line.startswith("--- "):
+            continue
+        if line.startswith("+++ "):
+            continue
+        cleaned_lines.append(line)
+
+    return "\n".join(cleaned_lines)
+
+
 def get_commit_id() -> str:
     try:
         result = subprocess.run(
@@ -37,7 +54,7 @@ def get_commit_id() -> str:
         )
         return result.stdout.strip()
 
-    except:
+    except Exception:
         return f"local-{int(datetime.utcnow().timestamp())}"
 
 
@@ -53,7 +70,7 @@ def send_to_lambda(commit_id: str, diff_content: str) -> None:
         response = requests.post(
             LAMBDA_URL,
             json=payload,
-            timeout=8
+            timeout=15
         )
 
         response.raise_for_status()
@@ -71,6 +88,17 @@ def main():
     if not staged_diff:
         print("[TraceAbility] No staged changes detected.")
         sys.exit(0)
+
+    if "Binary files" in staged_diff:
+        print("[TraceAbility] Binary change detected. Skipping AI analysis.")
+        sys.exit(0)
+
+    staged_diff = clean_diff(staged_diff)
+
+
+    if len(staged_diff) > MAX_DIFF_CHARS:
+        print("[TraceAbility] Large diff detected, truncating for AI analysis.")
+        staged_diff = staged_diff[:MAX_DIFF_CHARS]
 
     commit_id = get_commit_id()
 
