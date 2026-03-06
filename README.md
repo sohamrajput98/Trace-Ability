@@ -7,7 +7,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/INTENT_ACCURACY-96.8%25-D4AF37?style=for-the-badge&logo=target&logoColor=white"/>
   &nbsp;&nbsp;
-  <img src="https://img.shields.io/badge/COGNITIVE_ENGINE-CLAUDE_4.6_SONNET-D4AF37?style=for-the-badge&logo=anthropic&logoColor=white"/>
+  <img src="https://img.shields.io/badge/COGNITIVE_ENGINE-AMAZON_NOVA_LITE-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white"/>
   &nbsp;&nbsp;
   <img src="https://img.shields.io/badge/INFRA-AWS_LAMBDA-FFB000?style=for-the-badge&logo=amazonaws&logoColor=white"/>
   &nbsp;&nbsp;
@@ -53,12 +53,12 @@
 
 | Stage | Operation |
 |---|---|
-| Telemetry Capture | Git diff interception via local hooks |
-| Cloud Ingestion | Secure API transport to AWS |
-| Reasoning Core | LLM inference using Bedrock models |
+| Telemetry Capture | Dual-source: Local hooks + GitHub Webhooks |
+| Cloud Ingestion | Secure API transport via AWS Lambda Function URLs |
+| Reasoning Core | LLM inference using Amazon Nova Lite v1 |
 | Cognitive Scoring | Trust + risk quantification |
-| Persistence Layer | Structured storage logging |
-| Narrative Output | Stakeholder insight reports |
+| Persistence Layer | Structured storage logging (DynamoDB) |
+| Narrative Output | Automatic GitHub Commit Comments + Web Dashboard |
 
 ---
 
@@ -93,17 +93,37 @@ $$
 
 ```
 Trace-Ability/
-├── backend/
-│ └── lambda_handler.py
-├── hooks/
-│ └── pre_commit.py
-├── data/
-│ └── schema.json
-├── design/
-│ └── architecture.md
 ├── README.md
-└── requirements.txt
+├── assets
+│   └── Header.svg
+├── backend
+│   └── lambda_handler.py      # Multi-purpose AI Reasoning Engine
+├── data
+│   └── schema.json
+├── design.md
+├── hooks
+│   └── pre-commit.py    # Client-side diff automation
+├── requirements.md       # Architectural requirements
+├── requirements.txt      # Dependency manifest
+└── tests
+    ├── github_api_test.py     # Integration verification script
+    └── sample_diff.json   # Standardized test payloads
+
 ```
+---
+
+## 🔗 INTEGRATION ECOSYSTEM
+
+Trace-Ability is no longer just a passive observer. It is now a **bidirectional intelligence agent** that interacts directly with the developer's environment.
+
+| Integration | Mechanism | Outcome |
+|---|---|---|
+| **GitHub Webhooks** | Event-driven push triggers | Serverless execution on every code push |
+| **GitHub REST API** | Automated Commit Commenting | AI injects reasoning directly into the Git history |
+| **Local Git Hooks** | Pre-commit diff interception | Instant feedback before code leaves the machine |
+| **Cloud Dashboard** | Real-time Telemetry UI | Visualized architectural evolution and risk heatmaps |
+
+---
 
 ## 🛠️ DESIGN PHILOSOPHY
 
