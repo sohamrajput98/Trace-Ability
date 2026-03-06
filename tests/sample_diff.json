@@ -1,0 +1,4 @@
+{
+  "commit_id": "test-sha-12345",
+  "diff": "--- a/auth_service.py\n+++ b/auth_service.py\n@@ -10,5 +10,5 @@\n def get_db_connection():\n-    password = \"admin123\"\n+    password = os.getenv(\"DB_PASSWORD\")\n     return connect(user=\"admin\", password=password)"
+}
