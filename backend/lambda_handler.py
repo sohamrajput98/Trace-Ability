@@ -26,6 +26,7 @@ class DecimalEncoder(json.JSONEncoder):
 
 def post_github_comment(commit_id, analysis, story):
     """Posts analysis to GitHub using built-in urllib (No Layers Required)."""
+    
     token = os.getenv("GITHUB_TOKEN")
     repo = os.getenv("GITHUB_REPO")
     if not token or not repo or "local-" in str(commit_id): return
