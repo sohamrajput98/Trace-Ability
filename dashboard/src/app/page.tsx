@@ -147,6 +147,14 @@ useEffect(() => {
           </div>
         </div>
        
+        <div className="bg-[#12161B]/80 p-4 border-l border-[#D4AF37]/30 mb-4">
+          <p className="text-sm text-gray-400 font-light leading-relaxed">
+            <span className="text-[#D4AF37] text-[10px] font-bold uppercase mr-3">
+              Architecture Narrative:
+            </span>
+            {story}
+          </p>
+        </div>
 
         <div className="flex items-center justify-between mt-6">
           <div className="flex gap-4">
