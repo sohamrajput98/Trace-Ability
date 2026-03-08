@@ -28,9 +28,15 @@ export default function TraceAbilityDashboard() {
       
       if (Array.isArray(data)) {
         // Sort newest first
-        const sorted = data.sort((a, b) => {
-          return new Date(b.logged_at || 0).getTime() - new Date(a.logged_at || 0).getTime();
-        });
+       const sorted = data.sort((a, b) => {
+  const timeA = new Date(a.logged_at || 0).getTime();
+  const timeB = new Date(b.logged_at || 0).getTime();
+
+  if (timeB !== timeA) {
+    return timeB - timeA; 
+  }
+  return 0; 
+});
         setLogs(sorted);
       } else {
         setLogs([data]);
