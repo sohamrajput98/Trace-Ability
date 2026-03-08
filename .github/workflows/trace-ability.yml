@@ -1,0 +1,32 @@
+name: Trace-Ability AI Logger
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  log_commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Extract Diff and Send to Lambda
+        run: |
+          # Get the commit ID
+          COMMIT_ID="${{ github.sha }}"
+          
+          # Get the code diff of the latest commit
+          DIFF=$(git diff HEAD^ HEAD)
+          
+          # Safely package it into the exact JSON your Lambda expects
+          PAYLOAD=$(jq -n --arg commit_id "$COMMIT_ID" --arg diff "$DIFF" '{commit_id: $commit_id, diff: $diff}')
+          
+          # Send it to your Lambda Function URL
+          curl -X POST "https://wqn6vtpx2yrpfqb3qligyyt4ru0vjicb.lambda-url.ap-south-1.on.aws/" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD"
