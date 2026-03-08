@@ -18,11 +18,13 @@ export default function TraceAbilityDashboard() {
 
   const fetchLogs = async () => {
     try {
-      const response = await fetch(LAMBDA_URL);
-      if (!response.ok) throw new Error('Lambda failing');
-      const data = await response.json();
-      setLogs(Array.isArray(data) ? data : [data]);
-    } catch (e) {
+  // Adding no-store ensures you see today's commits immediately
+  const response = await fetch(LAMBDA_URL, { cache: 'no-store' }); 
+  
+  if (!response.ok) throw new Error('Lambda failing');
+  const data = await response.json();
+  setLogs(Array.isArray(data) ? data : [data]);
+}catch (e) {
       setLogs([{
         commit_id: "demo-h8a2b9c",
         category: "ARCHITECTURE",
