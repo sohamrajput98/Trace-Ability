@@ -24,11 +24,31 @@ body {
   text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
 }
 
-/* Custom scrollbar for the intelligence feed */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+/* Global Custom Scrollbar with "Breathing Room" Trick */
+::-webkit-scrollbar {
+  width: 16px; /* Wider track to allow for borders */
+  background: transparent;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(212, 175, 55, 0.2);
-  border-radius: 10px;
+
+::-webkit-scrollbar-track {
+  background: #0A0C10;
+  /* Optional: keeps a subtle line to separate it from the main content */
+  border-left: 1px solid rgba(255, 255, 255, 0.02); 
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(254, 238, 184, 0.205); /* Dark, subtle gold/gray */
+  border-radius: 20px;
+  /* THIS is what creates the empty space around the scrollbar! */
+  border: 5px solid #0A0C10; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(248, 238, 203, 0.781); /* Brightens when you hover */
+  border: 4px solid #0A0C10; /* Expands slightly */
+}
+
+/* Keep for the smaller inner components */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 12px;
 }
