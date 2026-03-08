@@ -14,8 +14,21 @@ export const LogCard = ({ log, index, isExpanded, onToggle }: LogCardProps) => {
   const [headlineExpanded, setHeadlineExpanded] = useState(false);
   
   const commitId = log.commit_id || `log-${index}`;
-  const narrative = log.architecture_story || "";
-  const briefPoints = narrative.split('.').filter((s: string) => s.trim().length > 10).slice(0, 3);
+ const narrative = log.architecture_story || "";
+  
+  // 1. Try new AI array
+  let briefPoints = log.condensed_points || [];
+
+  // 2. Fallback for old logs (NO TRIMMING)
+  if (briefPoints.length === 0 && narrative) {
+    // Split by period or semicolon
+    let rawSentences = narrative.split(/(?:\.\s+(?=[A-Z]))|;/);
+    
+    briefPoints = rawSentences
+      .map((s: string) => s.replace(/\.+$/, '').trim())
+      .filter((s: string) => s.length > 10)
+      .slice(0, 2); // Get first 2 sentences, no substring/trimming used here
+  }
   const isRisky = Number(log.risk_score) > 70;
 
   // Less sensitive auto-collapse for headline (60px threshold)
@@ -115,15 +128,19 @@ export const LogCard = ({ log, index, isExpanded, onToggle }: LogCardProps) => {
           
           <div className="overflow-hidden">
             {isExpanded ? (
-              <p className="text-[15px] text-gray-200 font-medium italic leading-relaxed">
+              <motion.p 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                className="text-[15px] text-gray-200 font-medium italic leading-relaxed"
+              >
                 "{narrative}"
-              </p>
+              </motion.p>
             ) : (
-              <ul className="space-y-4">
+              <ul className="space-y-3">
                 {briefPoints.map((p: string, i: number) => (
-                  <li key={i} className="flex gap-4 text-[14px] text-gray-300 font-medium leading-relaxed">
-                    <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#D4AF37] shrink-0 shadow-[0_0_8px_#D4AF37]" />
-                    {p.trim()}.
+                  <li key={i} className="flex gap-4 text-[13px] text-gray-400 font-medium leading-relaxed items-start">
+                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#D4AF37]/60 shrink-0" />
+                    <span>{p}</span> {/* Notice I removed the hardcoded '.' here since the AI usually adds it */}
                   </li>
                 ))}
               </ul>
