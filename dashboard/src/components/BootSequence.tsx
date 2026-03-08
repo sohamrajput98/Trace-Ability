@@ -6,7 +6,7 @@ import { Box } from 'lucide-react';
 export const BootSequence = ({ children }: { children: React.ReactNode }) => {
   const [isBooted, setIsBooted] = useState(false);
 
-  // Simulate the 2-second system boot
+  // Reverted to a cleaner 2.5-second boot time
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsBooted(true);
@@ -22,13 +22,14 @@ export const BootSequence = ({ children }: { children: React.ReactNode }) => {
       <AnimatePresence mode="wait">
         {!isBooted ? (
           /* ================================
-             SPLASH SCREEN (INITIAL STATE)
+             RESTORED SPLASH SCREEN
              ================================ */
           <motion.div
             key="splash"
             exit={{ opacity: 0, transition: { duration: 0.4 } }}
             className="relative z-10 flex h-screen w-screen flex-col items-center justify-center"
           >
+            {/* The layoutId here is the magic that links it to the header */}
             <motion.div layoutId="brand-container" className="flex flex-col items-center gap-6">
               <motion.div 
                 layoutId="brand-icon-wrapper"
@@ -94,7 +95,7 @@ export const BootSequence = ({ children }: { children: React.ReactNode }) => {
               </div>
             </header>
 
-            {/* MAIN CONTENT REVEAL (YOUR PAGE.TSX CONTENT) */}
+            {/* MAIN CONTENT REVEAL */}
             <motion.div 
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
