@@ -106,7 +106,7 @@ export const LogCard = ({ log, index, isExpanded, onToggle }: LogCardProps) => {
           
           <div className="bg-black/60 p-3 px-5 border border-white/10 rounded-xl shrink-0 text-center shadow-inner">
             <p className="text-[9px] text-gray-500 uppercase font-black mb-1 tracking-widest">Trust Index</p>
-            <p className={`text-2xl font-black italic ${Number(log.trust_score) > 95 ? 'text-[#D4AF37]' : 'text-white'}`}>
+            <p className={`text-3xl tracking-tight font-black italic drop-shadow-[0_0_10px_rgba(0,0,0,0.5)] ${Number(log.trust_score) > 95 ? 'text-[#D4AF37]' : 'text-white'}`}>
               {log.trust_score}%
             </p>
           </div>
@@ -129,8 +129,9 @@ export const LogCard = ({ log, index, isExpanded, onToggle }: LogCardProps) => {
           <div className="overflow-hidden">
             {isExpanded ? (
               <motion.p 
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }} 
+                initial={{ opacity: 0, filter: "blur(5px)", x: -10 }} 
+                animate={{ opacity: 1, filter: "blur(0px)", x: 0 }} 
+                transition={{ duration: 0.4, ease: "easeOut" }}
                 className="text-[15px] text-gray-200 font-medium italic leading-relaxed"
               >
                 "{narrative}"
