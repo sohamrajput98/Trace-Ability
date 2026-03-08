@@ -5,28 +5,53 @@ on:
     branches:
       - main
       - master
+  # 👇 THIS ADDS THE MANUAL BACKFILL BUTTON IN GITHUB
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: 'Paste a specific Commit SHA to manually process/backfill'
+        required: true
+        type: string
 
 jobs:
-  log_commit:
+  log_commits:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
-      - name: Extract Diff and Send to Lambda
+      - name: Process Commits
         run: |
-          # Get the commit ID
-          COMMIT_ID="${{ github.sha }}"
+          # 1. Determine if this is a manual backfill or an automatic push
+          if [ "${{ github.event.inputs.commit_sha }}" != "" ]; then
+            echo "Manual Trigger Detected. Backfilling commit..."
+            COMMIT_IDS="${{ github.event.inputs.commit_sha }}"
+          else
+            echo "Auto Push Detected. Processing new commits..."
+            echo '${{ toJSON(github.event.commits) }}' > commits.json
+            COMMIT_IDS=$(jq -r '.[].id' commits.json)
+          fi
           
-          # Get the code diff of the latest commit
-          DIFF=$(git diff HEAD^ HEAD)
-          
-          # Safely package it into the exact JSON your Lambda expects
-          PAYLOAD=$(jq -n --arg commit_id "$COMMIT_ID" --arg diff "$DIFF" '{commit_id: $commit_id, diff: $diff}')
-          
-          # Send it to your Lambda Function URL
-          curl -X POST "https://wqn6vtpx2yrpfqb3qligyyt4ru0vjicb.lambda-url.ap-south-1.on.aws/" \
-            -H "Content-Type: application/json" \
-            -d "$PAYLOAD"
+          # 2. Loop through the commit(s)
+          for COMMIT_ID in $COMMIT_IDS; do
+            echo "Processing commit: $COMMIT_ID"
+            
+            # Get the exact diff
+            DIFF=$(git diff ${COMMIT_ID}^..${COMMIT_ID} || echo "")
+            
+            if [ -z "$DIFF" ]; then
+              echo "No diff found for $COMMIT_ID, skipping..."
+              continue
+            fi
+            
+            # Package and Send
+            PAYLOAD=$(jq -n --arg commit_id "$COMMIT_ID" --arg diff "$DIFF" '{commit_id: $commit_id, diff: $diff}')
+            
+            curl -s -X POST "https://wqn6vtpx2yrpfqb3qligyyt4ru0vjicb.lambda-url.ap-south-1.on.aws/" \
+              -H "Content-Type: application/json" \
+              -d "$PAYLOAD"
+              
+            sleep 5
+          done
