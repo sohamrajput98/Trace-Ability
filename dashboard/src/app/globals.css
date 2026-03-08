@@ -57,3 +57,193 @@ body {
   0% { transform: translateY(0); }
   100% { transform: translateY(-50%); } 
 }
+
+
+/* UPDATED EKG Heartbeat Animation - Thicker & Brighter */
+.ekg-svg polyline {
+  fill: none;
+  stroke-width: 5; /* INCREASED from 2.5 to 5 */
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ekg-back {
+  stroke: rgba(212, 175, 55, 0.3); /* Brighter background track */
+}
+
+.ekg-front {
+  stroke: #D4AF37; /* Solid brand gold */
+  stroke-dasharray: 48, 144;
+  stroke-dashoffset: 192;
+  animation: ekg_dash 2s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 1)); /* Much stronger glow */
+}
+
+.ekg-front.delay {
+  animation-delay: 1s;
+}
+
+@keyframes ekg_dash {
+  72.5% { opacity: 0; }
+  to { stroke-dashoffset: 0; }
+}
+
+
+/* Expanding Dots Animation */
+.loader-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  --animation: 2s ease-in-out infinite;
+  --theme-color: #D4AF37; /* Forcing the gold theme here */
+}
+
+.loader-dots .circle-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border: solid 2px transparent;
+  border-radius: 50%;
+  margin: 0 8px;
+  background-color: transparent;
+  animation: circle-keys var(--animation);
+  border-color: var(--theme-color);
+}
+
+.loader-dots .circle-dot .dot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: var(--theme-color);
+  animation: dot-keys var(--animation);
+}
+
+.loader-dots .circle-dot .outline {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  animation: outline-keys var(--animation);
+}
+
+/* Staggered animation delays */
+.loader-dots .circle-dot:nth-child(2),
+.loader-dots .circle-dot:nth-child(2) .dot { animation-delay: 0.3s; }
+.loader-dots .circle-dot:nth-child(3),
+.loader-dots .circle-dot:nth-child(3) .dot { animation-delay: 0.6s; }
+.loader-dots .circle-dot:nth-child(4),
+.loader-dots .circle-dot:nth-child(4) .dot { animation-delay: 0.9s; }
+
+.loader-dots .circle-dot:nth-child(1) .outline { animation-delay: 0.9s; }
+.loader-dots .circle-dot:nth-child(2) .outline { animation-delay: 1.2s; }
+.loader-dots .circle-dot:nth-child(3) .outline { animation-delay: 1.5s; }
+.loader-dots .circle-dot:nth-child(4) .outline { animation-delay: 1.8s; }
+
+@keyframes circle-keys {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.3; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes dot-keys {
+  0% { transform: scale(1); }
+  50% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+@keyframes outline-keys {
+  0% { 
+    transform: scale(0); 
+    outline: solid 15px var(--theme-color); 
+    outline-offset: 0; 
+    opacity: 1; 
+  }
+  100% { 
+    transform: scale(1); 
+    outline: solid 0 transparent; 
+    outline-offset: 15px; 
+    opacity: 0; 
+  }
+}
+
+
+
+/* FULL PYRAMID REPAIR */
+.pyramid-loader {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  display: block;
+  transform-style: preserve-3d;
+  /* Tilt down so you can see the 3D effect from above */
+  transform: rotateX(-20deg);
+}
+
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotateY(360deg); }
+}
+
+.pyramid-loader .wrapper .side {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  /* Crucial: Origin must be the bottom center so they lean in from the base */
+  transform-origin: 50% 100%;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%) !important;
+  -webkit-clip-path: polygon(50% 0%, 0% 100%, 100% 100%) !important;
+}
+
+/* Correct 3D Math:
+  1. Face the correct direction (rotateY)
+  2. Push to the edge of the 100x100 base (translateZ 50px)
+  3. Tilt inwards to form the apex (rotateX 30deg)
+*/
+.pyramid-loader .wrapper .side1 {
+  transform: rotateY(0deg) translateZ(50px) rotateX(30deg);
+  background: conic-gradient(#ff6d70, #ff6d70, #ffe600, #ffe600);
+}
+
+.pyramid-loader .wrapper .side2 {
+  transform: rotateY(90deg) translateZ(50px) rotateX(30deg);
+  background: conic-gradient(#ffe600, #ffe600, #6cffd6, #6cffd6);
+}
+
+.pyramid-loader .wrapper .side3 {
+  transform: rotateY(180deg) translateZ(50px) rotateX(30deg);
+  background: conic-gradient(#6cffd6, #6cffd6, #ff6d70, #ff6d70);
+}
+
+.pyramid-loader .wrapper .side4 {
+  transform: rotateY(270deg) translateZ(50px) rotateX(30deg);
+  background: conic-gradient(#ff6d70, #ff6d70, #ffe600, #ffe600);
+}
+
+.pyramid-loader .wrapper .shadow {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(rgba(255, 99, 71, 0.8), rgba(255, 99, 71, 0.4));
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  /* Lay flat and push down to the base level of the pyramid */
+  transform: rotateX(90deg) translateZ(-50px);
+  filter: blur(12px);
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(255, 99, 71, 0.8);
+}
