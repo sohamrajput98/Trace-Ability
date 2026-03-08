@@ -18,13 +18,25 @@ export default function TraceAbilityDashboard() {
 
   const fetchLogs = async () => {
     try {
-  // Adding no-store ensures you see today's commits immediately
-  const response = await fetch(LAMBDA_URL, { cache: 'no-store' }); 
-  
-  if (!response.ok) throw new Error('Lambda failing');
-  const data = await response.json();
-  setLogs(Array.isArray(data) ? data : [data]);
-}catch (e) {
+      // 👇 REMOVED the 'headers' object completely to fix the CORS error!
+      const response = await fetch(`${LAMBDA_URL}?t=${Date.now()}`, { 
+        cache: 'no-store'
+      }); 
+      
+      if (!response.ok) throw new Error('Lambda failing');
+      const data = await response.json();
+      
+      if (Array.isArray(data)) {
+        // Sort newest first
+        const sorted = data.sort((a, b) => {
+          return new Date(b.logged_at || 0).getTime() - new Date(a.logged_at || 0).getTime();
+        });
+        setLogs(sorted);
+      } else {
+        setLogs([data]);
+      }
+    } catch (e) {
+      console.error("Fetch error:", e); // Helpful to see in console
       setLogs([{
         commit_id: "demo-h8a2b9c",
         category: "ARCHITECTURE",
