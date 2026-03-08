@@ -27,7 +27,7 @@ export const LogCard = ({ log, index, isExpanded, onToggle }: LogCardProps) => {
     briefPoints = rawSentences
       .map((s: string) => s.replace(/\.+$/, '').trim())
       .filter((s: string) => s.length > 10)
-      .slice(0, 2); // Get first 2 sentences, no substring/trimming used here
+      .slice(0, 2); 
   }
   const isRisky = Number(log.risk_score) > 70;
 
