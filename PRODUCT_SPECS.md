@@ -315,7 +315,7 @@
 
 **D-1:** OpenAI API or Anthropic API for LLM analysis (or local model infrastructure).
 
-**D-2:** Pinecone or Weaviate for vector database storage.
+**D-2:** Pinecone or Weaviate for vector database storage. 
 
 **D-3:** PostgreSQL for metadata storage.
 
@@ -335,6 +335,6 @@
 
 **M-4:** >80% of commits have intent documentation.
 
-**M-5:** <5 seconds average query response time.
+**M-5:** < 5 seconds average query response time.
 
 **M-6:** >90% user satisfaction score.
