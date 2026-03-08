@@ -26,7 +26,6 @@ class DecimalEncoder(json.JSONEncoder):
 
 def post_github_comment(commit_id, analysis, story):
     """Posts analysis to GitHub using built-in urllib (No Layers Required)."""
-    
     token = os.getenv("GITHUB_TOKEN")
     repo = os.getenv("GITHUB_REPO")
     if not token or not repo or "local-" in str(commit_id): return
@@ -67,11 +66,6 @@ def invoke_nova(model_id, system_prompt, user_prompt, max_tokens):
     except Exception as e:
         print(f"Bedrock Error: {e}"); raise
 
-def invoke_intent_analysis(diff_content):
-    output = invoke_nova(INTENT_MODEL, "Return STRICT JSON: summary, intent_analysis, category, risk_score(0-100), confidence_score(0-100), spec_alignment_score(0-100).", diff_content, 500)
-    match = re.search(r'\{.*\}', output, re.DOTALL)
-    return json.loads(match.group(0)) if match else {"summary": "Analysis failed", "category": "Other"}
-
 def calculate_trust_score(data):
     conf = data.get("confidence_score", 50)
     align = data.get("spec_alignment_score", 50)
@@ -106,31 +100,61 @@ def lambda_handler(event, context):
         if not commit_id or not diff:
             return {"statusCode": 400, "headers": headers, "body": json.dumps({"error": "Missing data"})}
 
-        # AI Sequence
-        intent_result = invoke_intent_analysis(diff)
-        intent_result["final_trust_score"] = calculate_trust_score(intent_result)
-        arch_story = invoke_nova(LIGHT_MODEL, "Summarize why this change matters for business/maintainability in 3 sentences.", diff, 200)
+        # AI Sequence: ONE SINGLE INVOCATION
+        system_prompt = (
+            "You are an AI analyzing git commits. Analyze the provided diff and return STRICT JSON ONLY. "
+            "Do not include markdown blocks. Include these exact keys:\n"
+            "1. 'summary': Short summary of changes\n"
+            "2. 'intent_analysis': Deeper technical intent\n"
+            "3. 'category': (e.g., REFACTOR, FEATURE, FIX)\n"
+            "4. 'risk_score': Integer 0-100\n"
+            "5. 'confidence_score': Integer 0-100\n"
+            "6. 'spec_alignment_score': Integer 0-100\n"
+            "7. 'architecture_story': A 3-sentence paragraph explaining why this matters for business/maintainability.\n"
+            "8. 'condensed_points': An array of exactly 2 extremely short bullet points (MAX 7 WORDS EACH). RULE: YOU MUST NOT COPY-PASTE SENTENCES FROM THE 'architecture_story'. You must write new, punchy fragments. (Example: 'Added mock data fallback', 'Optimized polling interval')."
+        )
+
+        raw_output = invoke_nova(INTENT_MODEL, system_prompt, diff, 800)
+        
+        # Parse the single JSON response
+        match = re.search(r'\{.*\}', raw_output, re.DOTALL)
+        if match:
+            try:
+                ai_data = json.loads(match.group(0))
+            except json.JSONDecodeError:
+                ai_data = {"summary": "JSON Parse Error", "category": "SYSTEM", "risk_score": 50, "confidence_score": 50, "spec_alignment_score": 50, "architecture_story": "Analysis failed.", "condensed_points": ["Error parsing AI output."]}
+        else:
+            ai_data = {"summary": "Regex Match Error", "category": "SYSTEM", "risk_score": 50, "confidence_score": 50, "spec_alignment_score": 50, "architecture_story": "Analysis failed.", "condensed_points": ["Error extracting AI output."]}
+
+        # Calculate final trust score
+        ai_data["final_trust_score"] = calculate_trust_score(ai_data)
 
         # Database Store
         table.put_item(Item={
             "commit_id": commit_id,
-            "summary": intent_result.get("summary"),
-            "intent_analysis": intent_result.get("intent_analysis"),
-            "category": intent_result.get("category"),
-            "trust_score": intent_result["final_trust_score"],
-            "risk_score": Decimal(str(intent_result.get("risk_score", 50))),
-            "architecture_story": arch_story,
+            "summary": ai_data.get("summary", "No summary"),
+            "intent_analysis": ai_data.get("intent_analysis", ""),
+            "category": ai_data.get("category", "SYSTEM"),
+            "trust_score": ai_data["final_trust_score"],
+            "risk_score": Decimal(str(ai_data.get("risk_score", 50))),
+            "architecture_story": ai_data.get("architecture_story", ""),
+            "condensed_points": ai_data.get("condensed_points", []),
             "logged_at": datetime.now(timezone.utc).isoformat(),
-            "expire_at": int(time.time()) + (30 * 86400)
+            "expire_at": int(time.time()) + (30 * 86400) # 30-day TTL (good for DynamoDB storage costs!)
         })
 
         # GitHub Comment
-        post_github_comment(commit_id, intent_result, arch_story)
+        post_github_comment(commit_id, ai_data, ai_data.get("architecture_story", ""))
 
         return {
             "statusCode": 200,
             "headers": headers,
-            "body": json.dumps({"status": "success", "analysis": intent_result, "story": arch_story}, cls=DecimalEncoder)
+            "body": json.dumps({
+                "status": "success", 
+                "analysis": ai_data, 
+                "story": ai_data.get("architecture_story", ""),
+                "condensed_points": ai_data.get("condensed_points", [])
+            }, cls=DecimalEncoder)
         }
 
     except Exception as e:
