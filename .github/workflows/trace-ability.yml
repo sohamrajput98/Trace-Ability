@@ -9,38 +9,60 @@ on:
         description: 'Specific Commit SHA (leave blank for bulk scan)'
         required: false
       scan_depth:
-        description: 'Number of past commits to scan (e.g., 5, 10, 20)'
+        description: 'Number of past commits to scan'
         required: false
-        default: '1'
+        default: '10'
 
 jobs:
   log_commits:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Process Commits
         run: |
-          if [ "${{ github.event.inputs.commit_sha }}" != "" ]; then
-            COMMIT_IDS="${{ github.event.inputs.commit_sha }}"
-          elif [ "${{ github.event.inputs.scan_depth }}" != "1" ]; then
-            echo "Scanning last ${{ github.event.inputs.scan_depth }} commits..."
-            COMMIT_IDS=$(git rev-list --max-count=${{ github.event.inputs.scan_depth }} HEAD)
+          # 1. CHECK IF THIS IS A MANUAL SCAN OR A LIVE PUSH
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            if [ "${{ github.event.inputs.commit_sha }}" != "" ]; then
+              COMMIT_IDS="${{ github.event.inputs.commit_sha }}"
+            else
+              # Grab the last X commits based on scan_depth
+              COMMIT_IDS=$(git rev-list --max-count=${{ github.event.inputs.scan_depth }} HEAD)
+            fi
           else
+            # 2. STANDARD LIVE PUSH LOGIC
             echo '${{ toJSON(github.event.commits) }}' > commits.json
             COMMIT_IDS=$(jq -r '.[].id' commits.json)
           fi
           
+          # 3. LOOP AND PROCESS
           for COMMIT_ID in $COMMIT_IDS; do
-            echo "Processing: $COMMIT_ID"
-            DIFF=$(git diff ${COMMIT_ID}^..${COMMIT_ID} || echo "")
-            if [ -z "$DIFF" ]; then continue; fi
+            # Skip if ID is null (happens sometimes with merge commits in Actions)
+            if [ "$COMMIT_ID" == "null" ] || [ -z "$COMMIT_ID" ]; then
+              continue
+            fi
             
-            PAYLOAD=$(jq -n --arg commit_id "$COMMIT_ID" --arg diff "$DIFF" '{commit_id: $commit_id, diff: $diff}')
+            echo "Processing commit: $COMMIT_ID"
+            
+            # BULLETPROOF DIFF: Ignore lock files, images, etc.
+            DIFF=$(git diff ${COMMIT_ID}^..${COMMIT_ID} -- . ':(exclude)*lock.json' ':(exclude)*.svg' ':(exclude)*.png' || git show --format="" $COMMIT_ID)
+            
+            # Truncate to safe size to prevent AI/jq crashes (10,000 chars)
+            SAFE_DIFF=$(echo "$DIFF" | head -c 10000)
+            
+            if [ -z "$SAFE_DIFF" ]; then
+              echo "No meaningful code diff found, skipping..."
+              continue
+            fi
+            
+            PAYLOAD=$(jq -n --arg commit_id "$COMMIT_ID" --arg diff "$SAFE_DIFF" '{commit_id: $commit_id, diff: $diff}')
+            
             curl -s -X POST "https://wqn6vtpx2yrpfqb3qligyyt4ru0vjicb.lambda-url.ap-south-1.on.aws/" \
               -H "Content-Type: application/json" \
               -d "$PAYLOAD"
-            sleep 5 # Critical for Bedrock rate limits
+              
+            sleep 3 # Rate limiting buffer
           done
