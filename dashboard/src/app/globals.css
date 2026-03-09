@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "./styles/pyramid-loader.css";
 
 @theme {
   --color-graphite: #0A0C10;
