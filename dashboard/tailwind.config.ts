@@ -11,7 +11,7 @@ const config: Config = {
       colors: {
         // Your specific brand colors
         graphite: "#12161B",
-        gold: "#D4AF37",
+        gold: "#05070A",
         steel: "#1F252E",
       },
     },
