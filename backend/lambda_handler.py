@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from botocore.exceptions import ClientError
 from botocore.config import Config
 from decimal import Decimal
+# demo commit for traceability pipeline
 
 # --- CONFIGURATION ---
 INTENT_MODEL = "us.amazon.nova-lite-v1:0"
