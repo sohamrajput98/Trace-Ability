@@ -22,7 +22,7 @@ DYNAMODB_TABLE_NAME = "TraceAbilityLogs"
 bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1", config=Config(retries={"max_attempts": 2})) 
 dynamodb = boto3.resource("dynamodb", region_name="ap-south-1")
 table = dynamodb.Table(DYNAMODB_TABLE_NAME)
-
+# Added comment for demo tracing
 # --- UTILS ---
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
