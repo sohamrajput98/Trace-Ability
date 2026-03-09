@@ -148,6 +148,9 @@ The system reduces documentation debt by automatically generating semantic inten
 
 ## 🚀 DEPLOYMENT
 
+The entire intent-extraction pipeline was built and deployed with a fully serverless architecture. End-to-end development, testing, and deployment consumed roughly $0.01 of cloud cost, demonstrating extreme cost efficiency and scalability for production workloads.
+
+---
 ```bash
 git clone https://github.com/sohamrajput98/Trace-Ability.git
 cd Trace-Ability
