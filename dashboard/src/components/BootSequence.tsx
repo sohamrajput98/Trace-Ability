@@ -23,12 +23,11 @@ export const BootSequence = ({ children }: { children: React.ReactNode }) => {
             exit={{ opacity: 0, transition: { duration: 0.65 } }}
             className="relative z-10 flex h-screen w-screen flex-col items-center justify-center"
           >
-            {/* Increased gap from 6 to 12 for better vertical spacing */}
+            
             <motion.div layoutId="brand-container" className="flex flex-col items-center gap-12">
               
               <motion.div 
                 layoutId="brand-icon-wrapper"
-                // Added mb-8 (margin-bottom) to physically push the text down
                 className="relative flex items-center justify-center mb-8"
               >
                 <AnimatedCube size={64} />
@@ -50,7 +49,6 @@ export const BootSequence = ({ children }: { children: React.ReactNode }) => {
             key="dashboard"
             className="relative z-10 flex flex-col h-screen w-full max-w-[1600px]"
           >
-            {/* The header requires no extra margin because Flex-row handles the horizontal spacing natively */}
             <header className="px-8 py-6 flex justify-between items-center border-b border-white/5 bg-[black]/100 backdrop-blur-md shrink-0">
               <motion.div layoutId="brand-container" className="flex items-center gap-5">
                 <motion.div 

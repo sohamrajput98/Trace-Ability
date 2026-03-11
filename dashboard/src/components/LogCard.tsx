@@ -16,12 +16,9 @@ export const LogCard = ({ log, index, isExpanded, onToggle }: LogCardProps) => {
   const commitId = log.commit_id || `log-${index}`;
  const narrative = log.architecture_story || "";
   
-  // 1. Try new AI array
   let briefPoints = log.condensed_points || [];
 
-  // 2. Fallback for old logs (NO TRIMMING)
   if (briefPoints.length === 0 && narrative) {
-    // Split by period or semicolon
     let rawSentences = narrative.split(/(?:\.\s+(?=[A-Z]))|;/);
     
     briefPoints = rawSentences
@@ -31,7 +28,6 @@ export const LogCard = ({ log, index, isExpanded, onToggle }: LogCardProps) => {
   }
   const isRisky = Number(log.risk_score) > 70;
 
-  // Less sensitive auto-collapse for headline (60px threshold)
   useEffect(() => {
     if (!headlineExpanded) return;
     
@@ -52,18 +48,14 @@ export const LogCard = ({ log, index, isExpanded, onToggle }: LogCardProps) => {
 
   return (
     <motion.div
-      // Smoother scroll entry: tighter scale and shorter travel distance (y: 40)
+      
       initial={{ opacity: 0, y: 40, scale: 0.95 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: false, margin: "-10% 0px -10% 0px" }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      // Outer wrapper acts as the 1px track for the running border
       className="group relative rounded-xl overflow-hidden p-[1px]"
     >
-      {/* The Running Border Engine: 
-        A spinning conic gradient. We use -inset-[100%] so the gradient is large 
-        enough to cover the corners as it rotates around the rectangular card. 
-      */}
+      
      <div 
   className={`absolute -inset-[100%] animate-[spin_4s_linear_infinite] opacity-60 group-hover:opacity-100 transition-opacity duration-500 ${
     isRisky 
@@ -71,9 +63,7 @@ export const LogCard = ({ log, index, isExpanded, onToggle }: LogCardProps) => {
       : 'bg-[conic-gradient(from_0deg,transparent_0%,transparent_25%,rgba(255,215,0,1)_50%,transparent_50%,transparent_75%,rgba(255,215,0,1)_100%)]'
   }`} 
 />
-      {/* Inner Card: 
-        Solid enough to mask the center of the gradient, leaving only the 1px edge visible.
-      */}
+      {/* Inner Card: */}
       <div className="relative z-10 bg-[BLACK] backdrop-blur-3xl p-8 md:p-10 rounded-[calc(0.75rem-1px)] h-full w-full">
         
         {/* Header Section */}

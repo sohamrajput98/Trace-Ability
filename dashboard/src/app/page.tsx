@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-/* FIX: Removed unused 'Radar' import which was causing a compile error */
 import { Activity, Cpu, Database } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { LogCard } from '@/components/LogCard';
@@ -105,26 +104,25 @@ export default function TraceAbilityDashboard() {
             
            {/* LIVE STREAM TICKER */}
 <div className="mt-6">
-  {/* 1. Header moved OUTSIDE the box */}
+  
   <p className="text-[12px] text-[#FFD700] uppercase tracking-[0.2em] font-black mb-2 flex items-center gap-2 opacity-90">
     <Activity size={18} className="text-[#FFD700] animate-pulse" /> Live Stream 
   </p>
   
-  {/* 3. Improved Box Aesthetics (recessed terminal look) */}
+  
   <div className="bg-[black] p-4 border border-[#FFD700]/20 rounded-md relative overflow-hidden shadow-[inset_0_0_20px_rgba(0,0,0,0.8),0_4px_15px_rgba(0,0,0,0.5)] hover:border-[#FFD700]/50 transition-all">
     
-    {/* Decorative top & bottom laser lines */}
+    
     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FFD700]/50 to-transparent" />
     <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FFD700]/20 to-transparent" />
     
-    {/* 2. Thicker Text (added font-bold, slightly brighter gray, text-[10px]) */}
+    
     <div className="h-24 overflow-hidden text-[10px] font-mono font-bold tracking-widest leading-relaxed relative">
       
-      {/* Fade overlays matched to the new darker background color */}
+      
       <div className="absolute top-0 left-0 w-full h-6 bg-gradient-to-b from-[#0A0D12] to-transparent z-10" />
       <div className="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-[#0A0D12] to-transparent z-10" />
       
-      {/* Same animation, but gap increased slightly to accommodate thicker text */}
       <div className="animate-[scrollY_15s_linear_infinite] flex flex-col gap-2 text-gray-300">
         <p><span className="text-[#FFD700]/70">{'>'}</span> BEDROCK_AUTH_V1: GRANTED</p>
         <p><span className="text-[#FFD700]/70">{'>'}</span> AES_256_GCM::ENCRYPTING</p>
@@ -133,7 +131,7 @@ export default function TraceAbilityDashboard() {
         <p><span className="text-[#FFD700]/70">{'>'}</span> SECURED_LOG_PUSHED // 200</p>
         <p><span className="text-[#FFD700]/70">{'>'}</span> TELEMETRY_SYNC // ACTIVE</p>
         
-        {/* Duplicate for seamless loop */}
+      
         <p aria-hidden="true" className="mt-2"><span className="text-[#FFD700]/70">{'>'}</span> BEDROCK_AUTH_V1: GRANTED</p>
         <p aria-hidden="true"><span className="text-[#FFD700]/70">{'>'}</span> AES_256_GCM::ENCRYPTING</p>
         <p aria-hidden="true" className="text-[#FFD700] drop-shadow-[0_0_5px_rgba(212,175,55,0.8)]"><span className="text-[#FFD700]/70">{'>'}</span> SIGNATURE::APPENDING... OK</p>
@@ -151,7 +149,6 @@ export default function TraceAbilityDashboard() {
             <div className="relative flex items-center justify-center w-45 h-45">
               <div style={{ transform: `scale(${220 / 300})`, transformOrigin: 'center' }} className="absolute flex items-center justify-center">
                 <div className="svg-frame">
-                  {/* FIX: Removed explicit casting inside style prop to prevent compiler crashes */}
                   <svg style={{ "--i": 0, "--j": 0 } as any} viewBox="0 0 344 344">
                     <g id="out1">
                       <path d="M72 172C72 116.772 116.772 72 172 72C227.228 72 272 116.772 272 172C272 227.228 227.228 272 172 272C116.772 272 72 227.228 72 172ZM197.322 172C197.322 158.015 185.985 146.678 172 146.678C158.015 146.678 146.678 158.015 146.678 172C146.678 185.985 158.015 197.322 172 197.322C185.985 197.322 197.322 185.985 197.322 172Z" />
