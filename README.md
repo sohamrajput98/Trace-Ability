@@ -35,7 +35,7 @@
 **Hackathon submission note:** The first ~38 seconds of the demo video appear blank due to a recording/export issue. The actual demo begins at **00:38**.
 > ## 🎥 SYSTEM TELEMETRY NOTE (DEMO VIDEO)
 > Technical reasoning, live logs, and the dashboard deep-dive begin at **00:38**
-> <p align="center"> <h3><p align="center"><a href="https://1drv.ms/v/c/db6afeda21cc0776/IQAnoWG3PAzcSYCgVQBOcLBnAblpMPykOua0ok8pkBUinV8?e=R9Uz3K"><b><font color="#FFD700">▶ WATCH THE SYSTEM DEMO HERE</font></b></a></p></h3> 
+> <p align="center"> <h3><p align="center"><a href="https://1drv.ms/v/c/db6afeda21cc0776/IQAnY3Pj4IQQT55LGvJqNt1rAY4aX1DEy1XHru6L4NF-3iM?e=Tet8ZZ"><b><font color="#FFD700">▶ WATCH THE SYSTEM DEMO HERE</font></b></a></p></h3> 
 
 <br>
 
