@@ -236,19 +236,40 @@ pip install -r requirements.txt
 - **Pull Request Advisor:** Injecting the <i>**Bedrock architectural narrative**</i> directly into **GitHub PR comments** as an automated reviewer before code merge .
 
 - **Semantic "Why" Search:** Allowing developers to <i>**query the DynamoDB intent-registry**</i> (e.g., "Why did we introduce Redis to the auth service in January?") .
+<br> <br>
 
-<p align="center">
-<font color="#888888"><i>Architected with</i></font>
+<p align="center"><hr style="border:0; height:1px; background:#333; width:100%"></p>
 
+<div align="center">
+  <h3 style="color: #FF4500; font-family: 'Courier New', Courier, monospace; letter-spacing: 2px;">
+     <img src="assets/sparkle.svg" width="20" style="vertical-align: middle; margin-right: 15px;"> 𝐋𝐄𝐀𝐃 𝐄𝐍𝐆𝐈𝐍𝐄𝐄𝐑-  <span style="color: #FFFFFF;">𝕾𝖔𝖍𝖆𝖒 𝕽𝖆𝖏𝖕𝖚𝖙</span> 
+  </h3>
 
-<p>
-
-<img src="https://img.shields.io/badge/AWS_Serverless_Ecosystem-111111?style=for-the-badge&logo=amazon-aws&logoColor=FF9900"/>
-&nbsp;
-<img src="https://img.shields.io/badge/Amazon_Bedrock-111111?style=for-the-badge&logo=amazon-aws&logoColor=FF9900"/>
-
+  <br>
+  <img src="assets/Lambda.svg" width="80" style="vertical-align: middle; margin-right: 15px;">
+  <img src="assets/DynamoDB.svg" width="80" style="vertical-align: middle; margin-right: 15px;"><br>
 <br>
+<div align="center">
+  <div style="display: flex; justify-content: center; align-items: center; gap: 100px;">     
+    <div style="text-align: center;">
+      <b>Architected with</b> <br>
+      <img src="https://github.com/sohamrajput98/EduShield/blob/main/assets/love.svg" width="70" height="70" style="vertical-align: middle;">
+    </div>
+    <div style="text-align: center;">
+      <p>
+        <span style="display: inline-block; vertical-align: middle; text-align: left;">
+          <br> <br>
+                    <img src="https://github.com/user-attachments/assets/7460fb90-7e36-46f2-b7b5-70a704c991ac" width="240">
+          <img src="https://github.com/user-attachments/assets/c963f754-8e18-43ce-aea2-06557fabf264" width="240">
+        </span>
+      </p>
+    </div>
 
-<img src="https://img.shields.io/badge/SYSTEM_STATUS-SHIELD_ACTIVE_ENCRYPTED-FF4500?style=for-the-badge&logoColor=white"/>
+  </div>
+</div>
 
+  </div>
+</div>
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:FFFB02,100:FFE015&height=180&section=footer&text=TRACE-ABILITY%20ENGINE%20ACTIVE&fontColor=FFFFFF&fontSize=30"/>
 </p>
